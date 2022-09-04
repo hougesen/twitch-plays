@@ -86,18 +86,39 @@ pub fn parse_chat_message<S: ToString>(message: S) -> ParsedMessage {
         "!select" => {
             ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::Backspace))
         }
+
         "!start" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::Return)),
+
         "!up" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::UpArrow)),
+
         "!down" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::DownArrow)),
+
         "!right" => {
             ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::RightArrow))
         }
+
         "!left" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::LeftArrow)),
+
+        // Left bumper
+        "!l" => ParsedMessage::new(
+            CommandType::GameCommand,
+            None,
+            Some(enigo::Key::Layout('a')),
+        ),
+
+        // right bumper
+        "!r" => ParsedMessage::new(
+            CommandType::GameCommand,
+            None,
+            Some(enigo::Key::Layout('s')),
+        ),
+
         "!a" => ParsedMessage::new(
             CommandType::GameCommand,
             None,
             Some(enigo::Key::Layout('x')),
         ),
+
         "!b" => ParsedMessage::new(
             CommandType::GameCommand,
             None,
