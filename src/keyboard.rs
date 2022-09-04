@@ -1,18 +1,18 @@
-use enigo::{Enigo, Key as EnigoKey, KeyboardControllable};
+use enigo::{Enigo, KeyboardControllable};
 use std::sync::{Arc, Mutex};
 
-pub struct CommandQueue(Vec<EnigoKey>);
+pub struct CommandQueue(Vec<enigo::Key>);
 
 impl CommandQueue {
     pub fn new() -> Self {
         CommandQueue(vec![])
     }
 
-    pub fn enqueue(&mut self, key: EnigoKey) {
+    pub fn enqueue(&mut self, key: enigo::Key) {
         self.0.push(key);
     }
 
-    pub fn dequeue(&mut self) -> Option<EnigoKey> {
+    pub fn dequeue(&mut self) -> Option<enigo::Key> {
         if !self.0.is_empty() {
             return Some(self.0.remove(0));
         }
@@ -42,7 +42,7 @@ impl KeyboardController {
         }
     }
 
-    pub fn press_key(&mut self, key: EnigoKey) {
+    pub fn press_key(&mut self, key: enigo::Key) {
         self.enigo.key_down(key);
         // Have to sleep for atleast 200ms between key presses, otherwise the emulator will see it as just turning
         std::thread::sleep(std::time::Duration::from_millis(200));
