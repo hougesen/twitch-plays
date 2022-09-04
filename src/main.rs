@@ -1,9 +1,8 @@
+mod platforms;
 mod pokemon;
-mod socket;
-mod twitch;
 
+use platforms::twitch::start_socket;
 use pokemon::Pokemon;
-use socket::start_socket;
 use std::sync::{Arc, Mutex};
 
 fn main() {
