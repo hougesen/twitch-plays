@@ -1,3 +1,4 @@
+mod message_parser;
 mod platforms;
 mod pokemon;
 

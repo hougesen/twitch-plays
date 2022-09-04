@@ -1,10 +1,11 @@
-use crate::pokemon::Pokemon;
-use enigo::Key as EnigoKey;
+use crate::{
+    message_parser::{parse_chat_message, queue_game_command, CommandType},
+    pokemon::Pokemon,
+};
+use dotenv::dotenv;
 use std::sync::{Arc, Mutex};
 use tungstenite::{connect, Message};
 use url::Url;
-
-use dotenv::dotenv;
 
 pub fn get_twitch_credentials() -> Result<(String, String), dotenv::Error> {
     dotenv().ok();
@@ -14,28 +15,6 @@ pub fn get_twitch_credentials() -> Result<(String, String), dotenv::Error> {
     let access_token = dotenv::var("TWITCH_ACCESS_TOKEN")?;
 
     Ok((channel_name, access_token))
-}
-
-pub struct ParsedMessage {
-    message_type: CommandType,
-    response: Option<String>,
-    key: Option<EnigoKey>,
-}
-
-impl ParsedMessage {
-    fn new(message_type: CommandType, response: Option<String>, key: Option<EnigoKey>) -> Self {
-        ParsedMessage {
-            message_type,
-            response,
-            key,
-        }
-    }
-}
-
-pub enum CommandType {
-    GameCommand,
-    ChannelCommand,
-    Unknown,
 }
 
 pub fn start_socket(game: Arc<Mutex<Pokemon>>) -> Result<(), tungstenite::Error> {
@@ -90,76 +69,6 @@ pub fn start_socket(game: Arc<Mutex<Pokemon>>) -> Result<(), tungstenite::Error>
             };
         }
     }
-}
-
-pub fn parse_chat_message<S: ToString>(message: S) -> ParsedMessage {
-    return match message.to_string().trim().to_lowercase().as_str() {
-        // Pokemon game commands
-        "!select" => {
-            ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::Backspace))
-        }
-
-        "!start" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::Return)),
-
-        "!up" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::UpArrow)),
-
-        "!down" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::DownArrow)),
-
-        "!right" => {
-            ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::RightArrow))
-        }
-
-        "!left" => ParsedMessage::new(CommandType::GameCommand, None, Some(enigo::Key::LeftArrow)),
-
-        // Left bumper
-        "!l" => ParsedMessage::new(
-            CommandType::GameCommand,
-            None,
-            Some(enigo::Key::Layout('a')),
-        ),
-
-        // right bumper
-        "!r" => ParsedMessage::new(
-            CommandType::GameCommand,
-            None,
-            Some(enigo::Key::Layout('s')),
-        ),
-
-        "!a" => ParsedMessage::new(
-            CommandType::GameCommand,
-            None,
-            Some(enigo::Key::Layout('x')),
-        ),
-
-        "!b" => ParsedMessage::new(
-            CommandType::GameCommand,
-            None,
-            Some(enigo::Key::Layout('z')),
-        ),
-
-        // Chat commands
-        "!github" | "!code" => ParsedMessage::new(
-            CommandType::ChannelCommand,
-            Some("You can find the code @ https://github.com/hougesen/twitch-plays".to_string()),
-            None,
-        ),
-
-        "!help" | "!commands" => ParsedMessage::new(
-            CommandType::ChannelCommand,
-            Some(
-                "You can find the commands @ https://github.com/hougesen/twitch-plays#commands"
-                    .to_string(),
-            ),
-            None,
-        ),
-
-        // Unknown command
-        _ => ParsedMessage::new(CommandType::Unknown, None, None),
-    };
-}
-
-fn queue_game_command(game: &Arc<Mutex<Pokemon>>, key: EnigoKey) {
-    game.lock().unwrap().queue_command(key);
 }
 
 fn queue_text_message(
