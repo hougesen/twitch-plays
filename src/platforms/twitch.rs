@@ -1,5 +1,5 @@
+use crate::keyboard::KeyboardController;
 use crate::message_parser::{parse_chat_message, queue_game_command, CommandType};
-use crate::pokemon::Pokemon;
 use std::sync::{Arc, Mutex};
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::WebSocket;
@@ -81,7 +81,7 @@ impl TwitchChat {
         Ok(socket)
     }
 
-    pub fn read_chat(&mut self, game: Arc<Mutex<Pokemon>>) {
+    pub fn read_chat(&mut self, keyboard_controller: Arc<Mutex<KeyboardController>>) {
         loop {
             let msg = self
                 .socket
@@ -105,12 +105,13 @@ impl TwitchChat {
                 let (_, chat_message) = message.split_once(':').unwrap();
 
                 println!("Message: {}", &chat_message);
+
                 let parsed_message = parse_chat_message(chat_message);
 
                 match parsed_message.message_type {
                     CommandType::GameCommand => {
                         if let Some(key) = parsed_message.key {
-                            queue_game_command(&game, key);
+                            queue_game_command(&keyboard_controller, key);
                         }
                     }
                     CommandType::ChannelCommand => {

@@ -20,16 +20,16 @@ impl CommandQueue {
     }
 }
 
-pub struct Pokemon {
-    pub enigo: Enigo,
+pub struct KeyboardController {
     pub command_queue: CommandQueue,
+    enigo: Enigo,
 }
 
-impl Pokemon {
+impl KeyboardController {
     pub fn new() -> Self {
-        Pokemon {
-            enigo: Enigo::new(),
+        KeyboardController {
             command_queue: CommandQueue::new(),
+            enigo: Enigo::new(),
         }
     }
 

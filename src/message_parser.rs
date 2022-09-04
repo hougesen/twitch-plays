@@ -1,4 +1,4 @@
-use crate::pokemon::Pokemon;
+use crate::keyboard::KeyboardController;
 use enigo::Key as EnigoKey;
 use std::sync::{Arc, Mutex};
 
@@ -26,7 +26,7 @@ pub enum CommandType {
 
 pub fn parse_chat_message<S: ToString>(message: S) -> ParsedMessage {
     return match message.to_string().trim().to_lowercase().as_str() {
-        // Pokemon game commands
+        // Game commands
         "!select" => ParsedMessage::new(CommandType::GameCommand, None, Some(EnigoKey::Backspace)),
 
         "!start" => ParsedMessage::new(CommandType::GameCommand, None, Some(EnigoKey::Return)),
@@ -70,6 +70,6 @@ pub fn parse_chat_message<S: ToString>(message: S) -> ParsedMessage {
     };
 }
 
-pub fn queue_game_command(game: &Arc<Mutex<Pokemon>>, key: EnigoKey) {
+pub fn queue_game_command(game: &Arc<Mutex<KeyboardController>>, key: EnigoKey) {
     game.lock().unwrap().queue_command(key);
 }
