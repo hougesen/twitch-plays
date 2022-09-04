@@ -1,10 +1,17 @@
 mod pokemon;
+mod socket;
+mod twitch;
 
 use pokemon::Pokemon;
+use socket::start_socket;
 use std::sync::{Arc, Mutex};
 
 fn main() {
     let game = Arc::new(Mutex::new(Pokemon::new()));
+
+    let socket_clone = Arc::clone(&game);
+
+    std::thread::spawn(move || start_socket(socket_clone));
 
     let queue_clone = Arc::clone(&game);
 
