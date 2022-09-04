@@ -1,4 +1,4 @@
-use crate::keyboard::KeyboardController;
+use crate::keyboard::CommandQueue;
 use crate::message_parser::{parse_chat_message, queue_game_command, CommandType};
 use std::sync::{Arc, Mutex};
 use tungstenite::stream::MaybeTlsStream;
@@ -81,7 +81,7 @@ impl TwitchChat {
         Ok(socket)
     }
 
-    pub fn read_chat(&mut self, keyboard_controller: Arc<Mutex<KeyboardController>>) {
+    pub fn read_chat(&mut self, command_queue: Arc<Mutex<CommandQueue>>) {
         loop {
             let msg = self
                 .socket
@@ -111,7 +111,7 @@ impl TwitchChat {
                 match parsed_message.message_type {
                     CommandType::GameCommand => {
                         if let Some(key) = parsed_message.key {
-                            queue_game_command(&keyboard_controller, key);
+                            queue_game_command(&command_queue, key);
                         }
                     }
                     CommandType::ChannelCommand => {

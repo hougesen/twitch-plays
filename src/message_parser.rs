@@ -1,4 +1,4 @@
-use crate::keyboard::KeyboardController;
+use crate::keyboard::CommandQueue;
 use enigo::Key as EnigoKey;
 use std::sync::{Arc, Mutex};
 
@@ -70,6 +70,6 @@ pub fn parse_chat_message<S: ToString>(message: S) -> ParsedMessage {
     };
 }
 
-pub fn queue_game_command(game: &Arc<Mutex<KeyboardController>>, key: EnigoKey) {
-    game.lock().unwrap().queue_command(key);
+pub fn queue_game_command(command_queue: &Arc<Mutex<CommandQueue>>, key: EnigoKey) {
+    command_queue.lock().unwrap().enqueue(key);
 }

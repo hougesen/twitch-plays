@@ -1,4 +1,5 @@
 use enigo::{Enigo, Key as EnigoKey, KeyboardControllable};
+use std::sync::{Arc, Mutex};
 
 pub struct CommandQueue(Vec<EnigoKey>);
 
@@ -21,24 +22,20 @@ impl CommandQueue {
 }
 
 pub struct KeyboardController {
-    pub command_queue: CommandQueue,
+    pub command_queue: Arc<Mutex<CommandQueue>>,
     enigo: Enigo,
 }
 
 impl KeyboardController {
     pub fn new() -> Self {
         KeyboardController {
-            command_queue: CommandQueue::new(),
+            command_queue: Arc::new(Mutex::new(CommandQueue::new())),
             enigo: Enigo::new(),
         }
     }
 
-    pub fn queue_command(&mut self, command: EnigoKey) {
-        self.command_queue.enqueue(command)
-    }
-
     pub fn next_command(&mut self) {
-        let command = self.command_queue.dequeue();
+        let command = self.command_queue.lock().unwrap().dequeue();
 
         if let Some(cmd) = command {
             self.press_key(cmd)
