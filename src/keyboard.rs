@@ -38,7 +38,7 @@ impl KeyboardController {
         let command = self.command_queue.lock().unwrap().dequeue();
 
         if let Some(cmd) = command {
-            self.press_key(cmd)
+            self.press_key(cmd);
         }
     }
 
@@ -47,5 +47,14 @@ impl KeyboardController {
         // Have to sleep for atleast 200ms between key presses, otherwise the emulator will see it as just turning
         std::thread::sleep(std::time::Duration::from_millis(200));
         self.enigo.key_up(key);
+    }
+
+    /// Saves the game using mGBA's keyboard shortcut (SHIFT+F1)
+    pub fn save_game_state(&mut self) {
+        println!("Saving game state");
+
+        self.enigo.key_down(enigo::Key::Shift);
+        self.enigo.key_click(enigo::Key::F1);
+        self.enigo.key_up(enigo::Key::Shift);
     }
 }

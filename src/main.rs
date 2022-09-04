@@ -17,9 +17,17 @@ fn main() {
         twitch_chat.read_chat(twitch_chat_clone);
     });
 
+    let mut last_save = std::time::Instant::now();
+
     loop {
         keyboard_controller.next_command();
 
         std::thread::sleep(std::time::Duration::from_millis(20));
+
+        // Save game every 5 minutes
+        if last_save.elapsed().as_secs() == 300 {
+            keyboard_controller.save_game_state();
+            last_save = std::time::Instant::now();
+        }
     }
 }
